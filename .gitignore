@@ -1,0 +1,27 @@
+# --- Frontend (Next.js) ---
+node_modules/
+.next/
+dist/
+.env
+.env.local
+.env.production
+*.log
+
+# --- Backend (Go) ---
+bin/
+vendor/
+*.exe
+*.test
+*.out
+*.log
+.env
+.env.local
+
+# --- System / Editor Files ---
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# --- Docker ---
+docker-compose.override.yml
