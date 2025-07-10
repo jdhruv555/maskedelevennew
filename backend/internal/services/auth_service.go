@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"os"
 	"strings"
 	"time"
 
@@ -23,11 +24,15 @@ func NewAuthService(repo interfaces.UserRepository) *AuthService {
 
 func (s *AuthService) RegisterUser(user *models.User) error {
 	if errs := ValidateUserInput(user); errs != nil {
-		var sb strings.Builder 
+		var sb strings.Builder
 		for field, msg := range errs {
 			sb.WriteString(field + ": " + msg + ";")
 		}
 		return errors.New(strings.TrimSuffix(sb.String(), ": "))
+	}
+
+	if user.Role != "admin" {
+		user.Role = "user"
 	}
 
 	existingUser, err := s.UserRepo.GetUserByEmail(user.Email)
@@ -35,7 +40,7 @@ func (s *AuthService) RegisterUser(user *models.User) error {
 		return err
 	}
 	if existingUser != nil {
-		return  errors.New("email already in use")
+		return errors.New("email already in use")
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
@@ -47,7 +52,6 @@ func (s *AuthService) RegisterUser(user *models.User) error {
 	user.Password = string(hashedPassword)
 	user.CreatedAt = time.Now()
 
-	
 	return s.UserRepo.CreateUser(user)
 }
 
@@ -84,16 +88,15 @@ func (s *AuthService) UpdateUser(id string, updated *models.User) error {
 	}
 	updated.ID = primitive.NilObjectID
 	updateData := bson.M{
-		"name":     updated.Name,
-		"email":    updated.Email,
-		"phone":    updated.Phone,
-		"address":  updated.Address,
+		"name":      updated.Name,
+		"email":     updated.Email,
+		"phone":     updated.Phone,
+		"address":   updated.Address,
 		"updatedAt": time.Now(),
 	}
 	return s.UserRepo.UpdateUser(objID, updateData)
-	
-}
 
+}
 
 func (s *AuthService) DeleteUser(id string) error {
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -101,4 +104,34 @@ func (s *AuthService) DeleteUser(id string) error {
 		return err
 	}
 	return s.UserRepo.DeleteUser(objID)
+}
+
+func (s *AuthService) BootstrapAdmin() error {
+	adminEmail := os.Getenv("ADMIN_EMAIL")
+	adminPassword := os.Getenv("ADMIN_PASSWORD")
+	adminName := os.Getenv("ADMIN_NAME")
+
+	if adminEmail == "" || adminPassword == "" || adminName == "" {
+		return errors.New("admin bootstrap envs missing")
+	}
+
+	existingUser, _ := s.UserRepo.GetUserByEmail(adminEmail)
+	if existingUser != nil {
+		return nil
+	}
+
+	hashedPwd, err := bcrypt.GenerateFromPassword([]byte(adminPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	admin := &models.User{
+		Name:      adminName,
+		Email:     adminEmail,
+		Password:  string(hashedPwd),
+		Role:      "admin",
+		CreatedAt: time.Now(),
+	}
+
+	return s.UserRepo.CreateUser(admin)
 }

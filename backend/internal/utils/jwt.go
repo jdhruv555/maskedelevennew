@@ -8,13 +8,14 @@ import (
 	"github.com/google/uuid"
 )
 
-func GenerateJWT(userID string, email string) (string, string, error) {
+func GenerateJWT(userID string, email string, role string) (string, string, error) {
 	jti := uuid.New().String()
 
 	claims := jwt.MapClaims{
 		"sub": userID,
 		"email": email,
 		"jti": jti,
+		"role": role,
 		"exp": time.Now().Add(7 * 24 * time.Hour).Unix(),
 		"iat": time.Now().Unix(),
 	}

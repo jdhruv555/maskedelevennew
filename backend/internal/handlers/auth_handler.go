@@ -35,6 +35,8 @@ func (h *AuthHandler) RegisterUser(c *fiber.Ctx) error {
 			"error": "Invalid request format.",
 		})
 	}
+	
+	user.Role = "user"
 
 	if err := h.AuthService.RegisterUser(&user); err != nil {
 		log.Println("Registration failed:", err)
@@ -67,7 +69,7 @@ func (h *AuthHandler) LoginUser(c *fiber.Ctx) error {
 		})
 	}
 
-	token, jti, err := utils.GenerateJWT(user.ID.Hex(), user.Email)
+	token, jti, err := utils.GenerateJWT(user.ID.Hex(), user.Email, user.Role)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Could not generate token",
