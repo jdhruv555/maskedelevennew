@@ -24,10 +24,9 @@ import (
 	"github.com/Shrey-Yash/Masked11/internal/middleware"
 	"github.com/Shrey-Yash/Masked11/internal/repositories/mongodb"
 	"github.com/Shrey-Yash/Masked11/internal/repositories/postgres"
-	"github.com/Shrey-Yash/Masked11/internal/repositories/redis"
+	redisrepo "github.com/Shrey-Yash/Masked11/internal/repositories/redis"
 	"github.com/Shrey-Yash/Masked11/internal/services"
 	"github.com/Shrey-Yash/Masked11/internal/utils"
-	"github.com/Shrey-Yash/Masked11/scripts"
 )
 
 func main() {
@@ -122,9 +121,9 @@ func initializeServices(repos map[string]interface{}) map[string]interface{} {
 	)
 
 	return map[string]interface{}{
-		"AuthService":   authService,
+		"AuthService":    authService,
 		"ProductService": productService,
-		"OrderService":  orderService,
+		"OrderService":   orderService,
 	}
 }
 
@@ -140,29 +139,29 @@ func initializeHandlers(services map[string]interface{}) map[string]interface{} 
 	orderHandler := handlers.NewOrderHandler(services["OrderService"].(*services.OrderService))
 
 	return map[string]interface{}{
-		"authHandler":   authHandler,
-		"userHandler":   userHandler,
+		"authHandler":    authHandler,
+		"userHandler":    userHandler,
 		"productHandler": productHandler,
-		"cartHandler":   cartHandler,
-		"orderHandler":  orderHandler,
+		"cartHandler":    cartHandler,
+		"orderHandler":   orderHandler,
 	}
 }
 
 func createFiberApp() *fiber.App {
 	// Create Fiber app with optimized configuration
 	app := fiber.New(fiber.Config{
-		AppName:               "Masked 11 Ecommerce API",
-		ServerHeader:          "Masked11-API",
-		DisableStartupMessage: true,
-		ReadTimeout:           30 * time.Second,
-		WriteTimeout:          30 * time.Second,
-		IdleTimeout:           120 * time.Second,
-		BodyLimit:             10 * 1024 * 1024, // 10MB
-		EnableTrustedProxyCheck: true,
-		ProxyHeader:           "X-Forwarded-For",
+		AppName:                  "Masked 11 Ecommerce API",
+		ServerHeader:             "Masked11-API",
+		DisableStartupMessage:    true,
+		ReadTimeout:              30 * time.Second,
+		WriteTimeout:             30 * time.Second,
+		IdleTimeout:              120 * time.Second,
+		BodyLimit:                10 * 1024 * 1024, // 10MB
+		EnableTrustedProxyCheck:  true,
+		ProxyHeader:              "X-Forwarded-For",
 		EnableSplittingOnParsers: true,
-		JSONEncoder:           utils.JSONEncoder,
-		JSONDecoder:           utils.JSONDecoder,
+		JSONEncoder:              utils.JSONEncoder,
+		JSONDecoder:              utils.JSONDecoder,
 	})
 
 	// Security middleware
@@ -341,7 +340,7 @@ func startServer(app *fiber.App) {
 		log.Printf("🚀 Server starting on port %s", port)
 		log.Printf("📊 Health check: http://localhost:%s/health", port)
 		log.Printf("📈 Metrics: http://localhost:%s/metrics", port)
-		
+
 		if err := app.Listen(":" + port); err != nil {
 			log.Fatal("Failed to start server:", err)
 		}

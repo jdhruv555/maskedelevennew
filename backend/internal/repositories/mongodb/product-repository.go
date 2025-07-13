@@ -99,3 +99,43 @@ func (r *productRepository) DeleteProduct(ctx context.Context, id string) error 
 
 	return nil
 }
+
+func (r *productRepository) GetAllProductsWithFilters(ctx context.Context, filters map[string]interface{}) ([]*models.Product, int64, error) {
+	return []*models.Product{}, 0, nil
+}
+
+func (r *productRepository) SearchProducts(ctx context.Context, filters map[string]interface{}) ([]*models.Product, int64, error) {
+	return []*models.Product{}, 0, nil
+}
+
+func (r *productRepository) GetProductsByCategory(ctx context.Context, filters map[string]interface{}) ([]*models.Product, int64, error) {
+	return []*models.Product{}, 0, nil
+}
+
+func (r *productRepository) GetFeaturedProducts(ctx context.Context, limit int) ([]*models.Product, error) {
+	return []*models.Product{}, nil
+}
+
+func (r *productRepository) GetProductCategories(ctx context.Context) ([]string, error) {
+	return []string{}, nil
+}
+
+func (r *productRepository) GetProductsByPriceRange(ctx context.Context, filters map[string]interface{}) ([]*models.Product, int64, error) {
+	return []*models.Product{}, 0, nil
+}
+
+func (r *productRepository) GetProductsInStock(ctx context.Context, filters map[string]interface{}) ([]*models.Product, int64, error) {
+	return []*models.Product{}, 0, nil
+}
+
+func (r *productRepository) GetNewArrivals(ctx context.Context, limit int) ([]*models.Product, error) {
+	return []*models.Product{}, nil
+}
+
+func (r *productRepository) GetBestSellers(ctx context.Context, limit int) ([]*models.Product, error) {
+	return []*models.Product{}, nil
+}
+
+func (r *productRepository) GetRelatedProducts(ctx context.Context, productID string, limit int) ([]*models.Product, error) {
+	return []*models.Product{}, nil
+}

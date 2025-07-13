@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/Shrey-Yash/Masked11/internal/database"
+	"github.com/gofiber/fiber/v2"
 )
 
 // CacheMiddleware provides intelligent caching for API responses
@@ -40,8 +40,7 @@ func CacheMiddleware() fiber.Handler {
 		}
 
 		// Cache miss - store original response
-		originalBody := c.Response().Body()
-		originalStatus := c.Response().StatusCode()
+		// Remove unused variables originalBody and originalStatus
 
 		// Continue to handler
 		if err := c.Next(); err != nil {
@@ -51,9 +50,9 @@ func CacheMiddleware() fiber.Handler {
 		// Cache successful responses only
 		if c.Response().StatusCode() == fiber.StatusOK {
 			response := map[string]interface{}{
-				"data":    json.RawMessage(c.Response().Body()),
-				"status":  c.Response().StatusCode(),
-				"cached":  true,
+				"data":     json.RawMessage(c.Response().Body()),
+				"status":   c.Response().StatusCode(),
+				"cached":   true,
 				"cachedAt": time.Now().UTC(),
 			}
 
@@ -76,10 +75,10 @@ func CacheMiddleware() fiber.Handler {
 func generateCacheKey(c *fiber.Ctx) string {
 	// Include path and query parameters
 	key := fmt.Sprintf("cache:%s:%s", c.Method(), c.Path())
-	
+
 	// Add query parameters to cache key
-	query := c.Query("page") + c.Query("limit") + c.Query("category") + 
-		c.Query("search") + c.Query("sortBy") + c.Query("minPrice") + 
+	query := c.Query("page") + c.Query("limit") + c.Query("category") +
+		c.Query("search") + c.Query("sortBy") + c.Query("minPrice") +
 		c.Query("maxPrice")
 
 	if query != "" {
@@ -124,7 +123,7 @@ func CacheInvalidationMiddleware() fiber.Handler {
 // invalidateRelatedCache removes related cache entries
 func invalidateRelatedCache(path string) {
 	ctx := context.Background()
-	
+
 	// Define cache patterns to invalidate
 	patterns := []string{
 		"cache:GET:/api/products*",
@@ -146,7 +145,7 @@ func invalidateRelatedCache(path string) {
 func CacheStatsMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		start := time.Now()
-		
+
 		if err := c.Next(); err != nil {
 			return err
 		}
@@ -160,4 +159,4 @@ func CacheStatsMiddleware() fiber.Handler {
 
 		return nil
 	}
-} 
+}

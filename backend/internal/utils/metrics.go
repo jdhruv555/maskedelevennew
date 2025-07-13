@@ -7,29 +7,29 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/Shrey-Yash/Masked11/internal/database"
+	"github.com/gofiber/fiber/v2"
 )
 
 // Metrics holds various performance metrics
 type Metrics struct {
-	RequestCount              int64             `json:"request_count"`
-	ErrorCount                int64             `json:"error_count"`
-	RateLimitExceededCount    int64             `json:"rate_limit_exceeded_count"`
-	AverageResponseTime       float64           `json:"average_response_time"`
-	TotalResponseTime         int64             `json:"total_response_time"`
-	ResponseCount             int64             `json:"response_count"`
-	EndpointRequestCounts     map[string]int64  `json:"endpoint_request_counts"`
-	EndpointErrorCounts       map[string]int64  `json:"endpoint_error_counts"`
-	IPRequestCounts           map[string]int64  `json:"ip_request_counts"`
-	IPRateLimitExceededCounts map[string]int64  `json:"ip_rate_limit_exceeded_counts"`
-	DatabaseQueryCount        int64             `json:"database_query_count"`
-	DatabaseErrorCount        int64             `json:"database_error_count"`
-	CacheHitCount             int64             `json:"cache_hit_count"`
-	CacheMissCount            int64             `json:"cache_miss_count"`
-	ActiveConnections         int64             `json:"active_connections"`
-	Uptime                    time.Duration     `json:"uptime"`
-	StartTime                 time.Time         `json:"start_time"`
+	RequestCount              int64            `json:"request_count"`
+	ErrorCount                int64            `json:"error_count"`
+	RateLimitExceededCount    int64            `json:"rate_limit_exceeded_count"`
+	AverageResponseTime       float64          `json:"average_response_time"`
+	TotalResponseTime         int64            `json:"total_response_time"`
+	ResponseCount             int64            `json:"response_count"`
+	EndpointRequestCounts     map[string]int64 `json:"endpoint_request_counts"`
+	EndpointErrorCounts       map[string]int64 `json:"endpoint_error_counts"`
+	IPRequestCounts           map[string]int64 `json:"ip_request_counts"`
+	IPRateLimitExceededCounts map[string]int64 `json:"ip_rate_limit_exceeded_counts"`
+	DatabaseQueryCount        int64            `json:"database_query_count"`
+	DatabaseErrorCount        int64            `json:"database_error_count"`
+	CacheHitCount             int64            `json:"cache_hit_count"`
+	CacheMissCount            int64            `json:"cache_miss_count"`
+	ActiveConnections         int64            `json:"active_connections"`
+	Uptime                    time.Duration    `json:"uptime"`
+	StartTime                 time.Time        `json:"start_time"`
 }
 
 var (
@@ -73,6 +73,16 @@ func IncrementEndpointRequestCount(endpoint string) {
 func IncrementEndpointErrorCount(endpoint string) {
 	metricsLock.Lock()
 	defer metricsLock.Unlock()
+	metrics.EndpointErrorCounts[endpoint]++
+}
+
+// IncrementEndpointRateLimitExceededCount increments the rate limit exceeded count for a specific endpoint
+func IncrementEndpointRateLimitExceededCount(endpoint string) {
+	metricsLock.Lock()
+	defer metricsLock.Unlock()
+	if metrics.EndpointErrorCounts == nil {
+		metrics.EndpointErrorCounts = make(map[string]int64)
+	}
 	metrics.EndpointErrorCounts[endpoint]++
 }
 
@@ -300,14 +310,14 @@ func CacheMetricsMiddleware() fiber.Handler {
 // LogRateLimitExceeded logs when rate limits are exceeded
 func LogRateLimitExceeded(c *fiber.Ctx) {
 	// Log rate limit exceeded event
-	fmt.Printf("[RATE_LIMIT] IP: %s, Path: %s, Time: %s\n", 
+	fmt.Printf("[RATE_LIMIT] IP: %s, Path: %s, Time: %s\n",
 		c.IP(), c.Path(), time.Now().Format(time.RFC3339))
 }
 
 // GetDatabaseMetrics returns database-specific metrics
 func GetDatabaseMetrics() map[string]interface{} {
 	ctx := context.Background()
-	
+
 	// Get Redis info
 	redisInfo := map[string]interface{}{}
 	if database.Redis != nil {
@@ -339,18 +349,18 @@ func GetDatabaseMetrics() map[string]interface{} {
 // GetSystemMetrics returns system-level metrics
 func GetSystemMetrics() map[string]interface{} {
 	return map[string]interface{}{
-		"uptime":           GetUptime().String(),
-		"start_time":       startTime.Format(time.RFC3339),
+		"uptime":             GetUptime().String(),
+		"start_time":         startTime.Format(time.RFC3339),
 		"active_connections": GetActiveConnections(),
-		"memory_usage":     "N/A", // Would need to implement memory tracking
-		"cpu_usage":        "N/A", // Would need to implement CPU tracking
+		"memory_usage":       "N/A", // Would need to implement memory tracking
+		"cpu_usage":          "N/A", // Would need to implement CPU tracking
 	}
 }
 
 // ExportMetricsForPrometheus exports metrics in Prometheus format
 func ExportMetricsForPrometheus() string {
 	metrics := GetMetrics()
-	
+
 	output := fmt.Sprintf(`# HELP masked11_requests_total Total number of requests
 # TYPE masked11_requests_total counter
 masked11_requests_total %d
@@ -409,4 +419,4 @@ masked11_uptime_seconds %f
 	)
 
 	return output
-} 
+}
