@@ -61,8 +61,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 min-h-screen flex flex-col`}
       >
         {/* Header */}
-        <header className="sticky top-0 z-50 bg-gradient-to-r from-gray-900 via-purple-900 to-blue-900 border-b-4 border-yellow-400/40 shadow-xl">
-          <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
+        <header className="sticky top-0 z-50 bg-gradient-to-r from-black via-red-900 to-red-600 bg-opacity-70 backdrop-blur-md border-b border-red-400 shadow-xl relative overflow-hidden">
+          {/* Full-width background image */}
+          <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
+            <img src="/globe.svg" alt="Header Background" className="w-full h-full object-cover opacity-20" />
+          </div>
+          <div className="relative z-10 max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
             <Link href="/" className="flex items-center gap-2 text-3xl font-bold text-yellow-300 drop-shadow-lg" style={{ fontFamily: bangers.style.fontFamily }}>
               <span className="sr-only">Masked 11 Home</span>
               <svg className="w-9 h-9 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" strokeWidth="2" /><path d="M8 12l2 2 4-4" strokeWidth="2" /></svg>
@@ -94,26 +98,6 @@ export default function RootLayout({
         <main className="flex-1 w-full">
           {children}
         </main>
-        {/* Footer */}
-        <footer className="bg-gradient-to-r from-gray-900 via-purple-900 to-blue-900 border-t-4 border-yellow-400/40 py-8 mt-12">
-          <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-2xl font-bold text-yellow-300 drop-shadow-lg" style={{ fontFamily: bangers.style.fontFamily }}>
-              <svg className="w-7 h-7 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" strokeWidth="2" /><path d="M8 12l2 2 4-4" strokeWidth="2" /></svg>
-              Masked 11
-            </div>
-            <nav className="flex gap-6 text-white text-sm font-bold uppercase tracking-wide">
-              <Link href="/products" className="hover:text-yellow-300 transition-colors">Shop</Link>
-              <Link href="/categories" className="hover:text-yellow-300 transition-colors">Teams</Link>
-              <Link href="/about" className="hover:text-yellow-300 transition-colors">About</Link>
-              <Link href="/contact" className="hover:text-yellow-300 transition-colors">Contact</Link>
-              <Link href="/profile" className="hover:text-yellow-300 transition-colors">Profile</Link>
-            </nav>
-            <div className="flex gap-4">
-              <a href="#" aria-label="Instagram" className="hover:text-yellow-300 transition-colors"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2zm0 1.5A4.25 4.25 0 003.5 7.75v8.5A4.25 4.25 0 007.75 20.5h8.5a4.25 4.25 0 004.25-4.25v-8.5A4.25 4.25 0 0016.25 3.5zm4.25 2.25a5.25 5.25 0 11-5.25 5.25 5.25 5.25 0 015.25-5.25zm0 1.5a3.75 3.75 0 103.75 3.75A3.75 3.75 0 0012 5.25zm5.5 1.25a1 1 0 11-1 1 1 1 0 011-1z" /></svg></a>
-              <a href="#" aria-label="Facebook" className="hover:text-yellow-300 transition-colors"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 5.019 3.676 9.163 8.438 9.877v-6.987h-2.54v-2.89h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.242 0-1.63.771-1.63 1.562v1.875h2.773l-.443 2.89h-2.33v6.987C18.324 21.163 22 17.019 22 12z" /></svg></a>
-            </div>
-          </div>
-        </footer>
       </body>
     </html>
   );
