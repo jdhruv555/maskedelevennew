@@ -1,4 +1,4 @@
-package scripts
+package main
 
 import (
 	"context"
@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 )
 
 func MigrateDb() {
@@ -205,4 +206,11 @@ func min(a, b int) int {
 		return a
 	}
 	return b
+}
+
+func main() {
+	if err := godotenv.Load(".env"); err != nil {
+		log.Println("Warning: .env file not loaded, relying on environment variables")
+	}
+	MigrateDb()
 }

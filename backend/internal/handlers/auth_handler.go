@@ -31,22 +31,34 @@ func (h *AuthHandler) RegisterUser(c *fiber.Ctx) error {
 
 	if err := json.Unmarshal(c.Body(), &user); err != nil {
 		log.Println("Invalid request body:", err)
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid request format.",
-		})
+		return utils.SendErrorResponse(c, fiber.StatusBadRequest, "Invalid Request Format", "Invalid request format.")
+	}
+	
+	// Validate user data
+	userData := map[string]interface{}{
+		"email":    user.Email,
+		"password": user.Password,
+		"name":     user.Name,
+	}
+	
+	if errors := utils.ValidateUserData(userData); len(errors) > 0 {
+		return utils.SendValidationErrors(c, errors)
 	}
 	
 	user.Role = "user"
 
 	if err := h.AuthService.RegisterUser(&user); err != nil {
 		log.Println("Registration failed:", err)
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error(),
-		})
+		return utils.SendErrorResponse(c, fiber.StatusBadRequest, "Registration Failed", err.Error())
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"message": "User registered successfully.",
+	return utils.SuccessResponse(c, fiber.StatusCreated, "User registered successfully", fiber.Map{
+		"user": fiber.Map{
+			"id":    user.ID,
+			"email": user.Email,
+			"name":  user.Name,
+			"role":  user.Role,
+		},
 	})
 }
 
