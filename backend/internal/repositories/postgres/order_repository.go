@@ -4,10 +4,13 @@ import (
 	"context"
 	"errors"
 	"time"
+	"strings"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/Shrey-Yash/Masked11/internal/models"
 	"github.com/Shrey-Yash/Masked11/internal/repositories/interfaces"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/Shrey-Yash/Masked11/internal/constants"
 )
 
 type orderRepository struct {
@@ -87,7 +90,24 @@ func (r *orderRepository) GetOrderByID(ctx context.Context, orderID string) (*mo
 }
 
 func (r *orderRepository) UpdateOrderStatus(orderID string, status string) error {
-	cmd, err := r.db.Exec(context.Background(), `UPDATE orders SET status = $1, updated_at = $2 WHERE id = $3`, status, time.Now(), orderID)
+
+	normalized := strings.ToLower(status)
+
+	var validStatus string
+	switch normalized {
+	case strings.ToLower(constants.OrderStatusPending):
+		validStatus = constants.OrderStatusPending
+	case strings.ToLower(constants.OrderStatusShipped):
+		validStatus = constants.OrderStatusShipped
+	case strings.ToLower(constants.OrderStatusDelivered):
+		validStatus = constants.OrderStatusDelivered
+	case strings.ToLower(constants.OrderStatusCancelled):
+		validStatus = constants.OrderStatusCancelled
+	default:
+		return errors.New("invalid order status")
+	}
+
+	cmd, err := r.db.Exec(context.Background(), `UPDATE orders SET status = $1, updated_at = $2 WHERE id = $3`, validStatus, time.Now(), orderID)
 	if err != nil {
 		return err
 	}
@@ -118,7 +138,7 @@ func (r *orderRepository) DeleteOrder(orderID string) error {
 }
 
 func (r *orderRepository) CancelOrder(orderID string) error {
-	cmd, err := r.db.Exec(context.Background(), `UPDATE orders SET status = 'cancelled', updated_at = $1 WHERE id = $2`, time.Now(), orderID)
+	cmd, err := r.db.Exec(context.Background(), `UPDATE orders SET status = $1, updated_at = $2 WHERE id = $3`, constants.OrderStatusCancelled, time.Now(), orderID)
 	if err != nil {
 		return err
 	}
