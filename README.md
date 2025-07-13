@@ -275,3 +275,27 @@ For support, email support@masked11.com or create an issue in the repository.
 ---
 
 **Masked 11** - Premium Ecommerce Platform 🛍️
+
+## 🚀 Optimized Deployment Instructions
+
+### Vercel
+- In your Vercel project settings, set the **Root Directory** to `frontend`.
+- No `vercel.json` is needed for this purpose.
+- Vercel will automatically detect and build your Next.js app from the `frontend` directory.
+
+### Netlify
+- Either set the **Base directory** to `frontend` in the Netlify dashboard, or use the provided `netlify.toml` at the repo root:
+
+```toml
+[build]
+  base    = "frontend"
+  publish = ".next"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "18"
+```
+- This ensures Netlify installs dependencies and builds from the correct directory.
+- Make sure there is **no empty or invalid `package.json` at the repo root**.
+
+---
