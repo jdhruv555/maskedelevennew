@@ -20,7 +20,7 @@ func NewUserHandler(service *services.AuthService) *UserHandler {
 }
 
 func (h *UserHandler) GetUser(c *fiber.Ctx) error {
-	userId := c.Locals("userId")
+	userId := c.Locals("userID")
 	if userId == nil {
 		return fiber.NewError(fiber.StatusUnauthorized, "Unauthorized")
 	}
@@ -36,7 +36,7 @@ func (h *UserHandler) GetUser(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) UpdateUser(c *fiber.Ctx) error {
-	userId := c.Locals("userId")
+	userId := c.Locals("userID")
 	if userId == nil {
 		return fiber.NewError(fiber.StatusUnauthorized, "Unauthorized")
 	}
@@ -67,7 +67,7 @@ func (h *UserHandler) UpdateUser(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) DeleteUser(c *fiber.Ctx) error {
-	userId := c.Locals("userId")
+	userId := c.Locals("userID")
 	if userId == nil {
 		return fiber.NewError(fiber.StatusUnauthorized, "Unauthorized")
 	}
@@ -81,3 +81,4 @@ func (h *UserHandler) DeleteUser(c *fiber.Ctx) error {
 	c.ClearCookie("token")
 	return c.JSON(fiber.Map{"message": "User deleted successfully"})
 }
+

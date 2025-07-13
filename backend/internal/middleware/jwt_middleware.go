@@ -30,7 +30,7 @@ func JWTMiddleware() fiber.Handler {
 			return fiber.NewError(fiber.StatusUnauthorized, "Session expired or invalid")
 		}
 
-		c.Locals("userId", claims["sub"])
+		c.Locals("userID", claims["sub"])
 		c.Locals("userEmail", claims["email"])
 
 		return c.Next()

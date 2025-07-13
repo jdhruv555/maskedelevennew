@@ -22,6 +22,7 @@ func AdminOnly() fiber.Handler {
             return fiber.NewError(fiber.StatusForbidden, "Admin access required")
         }
 
+        c.Locals("isAdmin", true)
         return c.Next()
     }
 }
